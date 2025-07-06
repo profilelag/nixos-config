@@ -24,7 +24,7 @@ jobs:
           chmod 600 ~/.ssh/key
       - name: Test Configuration
         run: |
-          ssh -i ~/.ssh/key root@$IP -t "cd /etc/nixos/ && git pull && nixos-rebuild test"
+          ssh -i -v ~/.ssh/key root@$IP -t "cd /etc/nixos/ && git pull && nixos-rebuild test"
       - name: Deploy Configuration
         run: |
           ssh -i ~/.ssh/key root@$IP -t "cd /etc/nixos/ && nixos-rebuild switch"
