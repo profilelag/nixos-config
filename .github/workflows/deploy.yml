@@ -20,11 +20,14 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan $IP >> ~/.ssh/known_hosts
-          echo $SSH_KEY > ~/.ssh/key
+          echo "$SSH_KEY" | sed 's/\\n/\n/g' > ~/.ssh/key
           chmod 600 ~/.ssh/key
+          # Verify key was created and has correct format
+          ls -la ~/.ssh/key
+          head -1 ~/.ssh/key
       - name: Test Configuration
         run: |
-          ssh -i -v ~/.ssh/key root@$IP -t "cd /etc/nixos/ && git pull && nixos-rebuild test"
+          ssh -i ~/.ssh/key -v root@$IP -t "cd /etc/nixos/ && git pull && nixos-rebuild test"
       - name: Deploy Configuration
         run: |
           ssh -i ~/.ssh/key root@$IP -t "cd /etc/nixos/ && nixos-rebuild switch"
