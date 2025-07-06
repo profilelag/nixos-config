@@ -46,7 +46,7 @@
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILdomjhsEzjVXAPWXSFAelJMotfkT+nlwIMbYhG2ziVA nkeller@nixos"
       ];
-    }
+    };
   }
   nixpkgs.config.allowUnfree = true;
 
