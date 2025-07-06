@@ -1,0 +1,30 @@
+on: [push]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to NixOS Machine
+    env:
+      IP: 100.74.80.94
+      SSH_KEY: ${{ secrets.SSH_KEY }}
+    steps:
+      - name: Setup Tailscale
+        id: tailscale
+        uses: tailscale/github-action@main
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+      - name: Add SSH key
+        id: ssh
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan $IP >> ~/.ssh/known_hosts
+          printf "%s" "$SSH_KEY" > ~/.ssh/key
+          chmod 600 ~/.ssh/key
+      - name: Test Configuration
+        run: |
+          ssh -i ~/.ssh/key root@$IP -t "cd /etc/nixos/ && git pull && nixos-rebuild test"
+      - name: Deploy Configuration
+        run: |
+          ssh -i ~/.ssh/key root@$IP -t "cd /etc/nixos/ && nixos-rebuild switch"
